@@ -1,0 +1,53 @@
+Configuration:
+  status: WARN
+  properties:
+    Property:
+      - name: LOG_PATH
+        value: ${sys:LOG_PATH:-./logs}
+      - name: SERVICE_NAME
+        value: ${sys:SERVICE_NAME:-microservice-dev}
+
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "%highlight{%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=cyan}"
+
+  Loggers:
+    Logger:
+      - name: co.com.pragma
+        level: debug
+        includeLocation: true
+        additivity: false
+        AppenderRef:
+          - ref: Console
+
+      - name: org.springframework
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: Console
+
+      - name: org.springframework.security
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: Console
+
+      - name: io.r2dbc.postgresql.QUERY
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: Console
+
+      - name: reactor.netty.http.server
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: Console
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console

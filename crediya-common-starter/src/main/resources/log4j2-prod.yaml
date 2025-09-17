@@ -1,0 +1,58 @@
+Configuration:
+  status: ERROR
+  properties:
+    Property:
+      - name: LOG_PATH
+        value: ${sys:LOG_PATH:-/var/log/app}
+      - name: SERVICE_NAME
+        value: ${spring:application.name:-microservice}
+  Appenders:
+    RollingFile:
+      name: RollingFile
+      fileName: "${LOG_PATH}/${SERVICE_NAME}.log"
+      filePattern: "${LOG_PATH}/${SERVICE_NAME}-%d{yyyy-MM-dd}-%i.log.gz"
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+      Policies:
+        TimeBasedTriggeringPolicy:
+          interval: "1"
+          modulate: true
+        SizeBasedTriggeringPolicy:
+          size: "50MB"
+      DefaultRolloverStrategy:
+        max: "30"
+
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+
+  Loggers:
+    Logger:
+      - name: org.springframework
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: RollingFile
+          - ref: Console
+
+      - name: io.r2dbc
+        level: error
+        additivity: false
+        AppenderRef:
+          - ref: RollingFile
+          - ref: Console
+
+      - name: reactor.netty
+        level: error
+        additivity: false
+        AppenderRef:
+          - ref: RollingFile
+          - ref: Console
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: RollingFile
+        - ref: Console

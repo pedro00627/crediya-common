@@ -1,0 +1,111 @@
+Configuration:
+  status: WARN
+  properties:
+    Property:
+      - name: LOG_PATH
+        value: ${sys:LOG_PATH:-./logs}
+      - name: SERVICE_NAME
+        value: ${sys:SERVICE_NAME:-nosql-service}
+      - name: APP_PACKAGE
+        value: ${sys:APP_PACKAGE:-com.example}
+
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+
+    RollingFile:
+      name: RollingFile
+      fileName: "${LOG_PATH}/${SERVICE_NAME}.log"
+      filePattern: "${LOG_PATH}/${SERVICE_NAME}-%i.log.gz"
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: "25MB"
+      DefaultRolloverStrategy:
+        max: "20"
+
+    # Archivo separado para métricas de performance
+    RollingFile:
+      name: MetricsFile
+      fileName: "${LOG_PATH}/${SERVICE_NAME}-metrics.log"
+      filePattern: "${LOG_PATH}/${SERVICE_NAME}-metrics-%i.log.gz"
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: "5MB"
+      DefaultRolloverStrategy:
+        max: "5"
+
+  Loggers:
+    Logger:
+      - name: ${APP_PACKAGE}
+        level: ${sys:APP_LOG_LEVEL:-debug}
+        includeLocation: true
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # MongoDB
+      - name: org.mongodb
+        level: ${sys:MONGO_LOG_LEVEL:-warn}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      - name: org.springframework.data.mongodb
+        level: ${sys:SPRING_MONGO_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # DynamoDB/AWS
+      - name: com.amazonaws
+        level: ${sys:AWS_LOG_LEVEL:-warn}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      - name: software.amazon.awssdk
+        level: ${sys:AWS_SDK_LOG_LEVEL:-warn}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # Redis
+      - name: io.lettuce
+        level: ${sys:REDIS_LOG_LEVEL:-warn}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # Métricas de performance (logger personalizado)
+      - name: ${APP_PACKAGE}.performance
+        level: ${sys:PERFORMANCE_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: MetricsFile
+
+      - name: org.springframework
+        level: ${sys:SPRING_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+    Root:
+      level: ${sys:ROOT_LOG_LEVEL:-info}
+      AppenderRef:
+        - ref: Console
+        - ref: RollingFile

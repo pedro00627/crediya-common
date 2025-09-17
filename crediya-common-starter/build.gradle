@@ -1,0 +1,8 @@
+// This build file is intentionally almost empty.
+// The configuration for this subproject is managed centrally in the root build.gradle file.
+// This approach helps to avoid configuration conflicts and keeps the build logic organized.
+
+// You can add dependencies specific ONLY to this module here if needed.
+dependencies {
+    // Example: implementation 'com.google.code.gson:gson:2.10.1'
+}

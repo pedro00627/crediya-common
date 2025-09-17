@@ -1,0 +1,82 @@
+Configuration:
+  status: WARN
+  properties:
+    Property:
+      - name: LOG_PATH
+        value: ${sys:LOG_PATH:-./logs}
+      - name: SERVICE_NAME
+        value: ${sys:SERVICE_NAME:-web-service}
+      - name: APP_PACKAGE
+        value: ${sys:APP_PACKAGE:-com.example}
+
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+
+    RollingFile:
+      name: RollingFile
+      fileName: "${LOG_PATH}/${SERVICE_NAME}.log"
+      filePattern: "${LOG_PATH}/${SERVICE_NAME}-%i.log.gz"
+      JsonTemplateLayout:
+        eventTemplateUri: "classpath:log4j2-template.json"
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: "15MB"
+      DefaultRolloverStrategy:
+        max: "10"
+
+  Loggers:
+    Logger:
+      - name: ${APP_PACKAGE}
+        level: ${sys:APP_LOG_LEVEL:-debug}
+        includeLocation: true
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # Web/REST específico
+      - name: org.springframework.web
+        level: ${sys:WEB_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      - name: org.springframework.security
+        level: ${sys:SECURITY_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      # WebFlux reactivo
+      - name: org.springframework.web.reactive
+        level: ${sys:REACTIVE_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      - name: reactor.netty.http
+        level: ${sys:HTTP_LOG_LEVEL:-warn}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+      - name: org.springframework
+        level: ${sys:SPRING_LOG_LEVEL:-info}
+        additivity: false
+        AppenderRef:
+          - ref: Console
+          - ref: RollingFile
+
+    Root:
+      level: ${sys:ROOT_LOG_LEVEL:-info}
+      AppenderRef:
+        - ref: Console
+        - ref: RollingFile
