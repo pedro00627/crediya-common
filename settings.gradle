@@ -1,4 +1,5 @@
-rootProject.name = 'crediya-common'
+rootProject.name = 'Common'
 
 include 'crediya-common-domain'
 include 'crediya-common-starter'
+include 'crediya-common-security'

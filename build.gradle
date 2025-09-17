@@ -1,15 +1,15 @@
-import org.gradle.jvm.toolchain.JavaLanguageVersion
-
-// Global settings for all projects (root and subprojects)
 allprojects {
     group = 'co.com.pragma'
-    version = '0.0.4'
+    version = '0.0.53'
+
+    ext {
+        jjwtVersion = '0.12.6' // Version para JWT
+    }
 
     repositories {
         mavenCentral()
     }
 
-    // Apply base Java plugin and set toolchain for all projects
     apply plugin: 'java'
     java {
         toolchain {
@@ -17,22 +17,19 @@ allprojects {
         }
     }
 
-    // Add resolution strategy to force spring-beans version
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             force 'org.springframework:spring-beans:6.2.10'
         }
     }
 }
 
-// Specific configuration for the 'crediya-common-domain' library module
 project(':crediya-common-domain') {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
 
     description = 'Domain module for common utilities in CrediYa microservices'
 
-    // Add Jars for sources and javadoc
     java {
         withSourcesJar()
         withJavadocJar()
@@ -46,7 +43,7 @@ project(':crediya-common-domain') {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                artifactId = 'crediya-common-domain' // Explicitly set artifactId
+                artifactId = 'crediya-common-domain'
                 pom {
                     name.set('CrediYa Common Domain')
                     description.set(project.description)
@@ -67,34 +64,29 @@ project(':crediya-common-domain') {
     }
 }
 
-// Specific configuration for the 'crediya-common-starter' library module
-project(':crediya-common-starter') {
+project(':crediya-common-security') {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
 
-    description = 'Starter for common utilities in CrediYa microservices'
+    description = 'Security module for common utilities in CrediYa microservices'
 
-    // Add Jars for sources and javadoc
     java {
         withSourcesJar()
         withJavadocJar()
     }
 
     dependencies {
-        // The starter module depends on the domain module
         implementation project(':crediya-common-domain')
+        implementation project(':crediya-common-starter') // Added this line
+        implementation 'io.projectreactor:reactor-core' // Added this line
 
-        // Spring Boot BOM for dependency management
         api platform('org.springframework.boot:spring-boot-dependencies:3.2.5')
-        // Spring Boot dependency for auto-configuration classes
-        api 'org.springframework.boot:spring-boot-autoconfigure'
+        api 'org.springframework.boot:spring-boot-starter-security'
 
-        // Logging dependencies
-        api 'org.apache.logging.log4j:log4j-api'
-        api 'org.apache.logging.log4j:log4j-core'
-        api 'org.apache.logging.log4j:log4j-layout-template-json'
+        api "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+        runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+        runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
-        // Testing dependencies
         testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
@@ -103,7 +95,56 @@ project(':crediya-common-starter') {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                // artifactId is derived from the project name: 'crediya-common-starter'
+                artifactId = 'crediya-common-security'
+                pom {
+                    name.set('CrediYa Common Security')
+                    description.set(project.description)
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/pedro00627/crediya-common")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+}
+
+project(':crediya-common-starter') {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    description = 'Starter for common utilities in CrediYa microservices'
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    dependencies {
+        implementation project(':crediya-common-domain')
+
+        api platform('org.springframework.boot:spring-boot-dependencies:3.2.5')
+        api 'org.springframework.boot:spring-boot-autoconfigure'
+
+        api 'org.apache.logging.log4j:log4j-api'
+        api 'org.apache.logging.log4j:log4j-core'
+        api 'org.apache.logging.log4j:log4j-layout-template-json'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
                 pom {
                     name.set('CrediYa Common Starter')
                     description.set(project.description)

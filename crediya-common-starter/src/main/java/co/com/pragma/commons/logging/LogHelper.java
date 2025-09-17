@@ -1,7 +1,9 @@
 package co.com.pragma.commons.logging;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -10,134 +12,115 @@ import java.util.regex.Pattern;
  * como correos electrónicos y números de documento antes de ser registrados.
  */
 public final class LogHelper {
-    /**
-     * Patrón de expresión regular para validar direcciones de correo electrónico.
-     * Utilizado internamente para determinar si un String es un correo electrónico válido
-     * antes de intentar enmascararlo.
-     */
+
+    private static final Logger logger = LogManager.getLogger(LogHelper.class);
+
+    // Constantes de enmascaramiento
+    private static final char MASK_CHAR = '*';
+    private static final String MASK_3_CHARS = String.valueOf(MASK_CHAR).repeat(3);
+    private static final String INVALID_EMAIL_FORMAT = MASK_3_CHARS;
+    private static final String EMAIL_MASK_REPLACEMENT = "$1" + MASK_3_CHARS + "$3";
+    // Constantes para enmascaramiento de documento
+    private static final String INVALID_DOCUMENT_FORMAT = MASK_3_CHARS;
+    private static final String MASK_4_CHARS = String.valueOf(MASK_CHAR).repeat(4);
+    // Constantes para enmascaramiento de email
+    private static final char AT_SIGN = '@';
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
+    );
+    private static final Pattern EMAIL_MASK_PATTERN = Pattern.compile("(^.)(.*)(.@.*$)");
+    private static final int MIN_DOCUMENT_LENGTH = 6;
 
-    private static final Logger logger = Logger.getLogger(LogHelper.class.getName());
-
-    /**
-     * Constructor privado para evitar la instanciación de esta clase de utilidad.
-     */
     private LogHelper() {
         // Private constructor for utility class
     }
 
     /**
-     * Registra un mensaje informativo.
+     * Registra un mensaje a nivel INFO.
      *
-     * @param message El mensaje a registrar. Puede contener placeholders ({}) para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param message El mensaje a registrar, puede contener placeholders `{}`.
+     * @param args    Los argumentos para los placeholders.
      */
     public static void info(String message, Object... args) {
-        if (logger.isLoggable(Level.INFO)) {
-            logger.info(formatMessage(message, args));
+        if (logger.isInfoEnabled()) {
+            logger.info(message, args);
         }
     }
 
     /**
-     * Registra un mensaje de advertencia.
+     * Registra un mensaje a nivel WARN.
      *
-     * @param message El mensaje de advertencia a registrar. Puede contener placeholders ({}) para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param message El mensaje a registrar, puede contener placeholders `{}`.
+     * @param args    Los argumentos para los placeholders.
      */
     public static void warn(String message, Object... args) {
-        if (logger.isLoggable(Level.WARNING)) {
-            logger.warning(formatMessage(message, args));
+        if (logger.isWarnEnabled()) {
+            logger.warn(message, args);
         }
     }
 
     /**
-     * Registra un mensaje de depuración.
+     * Registra un mensaje a nivel DEBUG.
      *
-     * @param message El mensaje de depuración a registrar. Puede contener placeholders ({}) para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param message El mensaje a registrar, puede contener placeholders `{}`.
+     * @param args    Los argumentos para los placeholders.
      */
     public static void debug(String message, Object... args) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine(formatMessage(message, args));
+        if (logger.isDebugEnabled()) {
+            logger.debug(message, args);
         }
     }
 
     /**
-     * Registra un mensaje de error junto con una excepción.
+     * Registra un mensaje a nivel ERROR con una excepción.
      *
-     * @param message El mensaje de error a registrar.
-     * @param throwable La excepción asociada al error.
+     * @param message   El mensaje de error.
+     * @param throwable La excepción a registrar.
      */
     public static void error(String message, Throwable throwable) {
-        logger.log(Level.SEVERE, message, throwable);
+        logger.error(message, throwable);
     }
 
     /**
-     * Formatea un mensaje reemplazando placeholders {} con los argumentos proporcionados.
-     * Método interno para dar formato a los mensajes de logging.
+     * Enmascara una dirección de correo electrónico para un logging seguro.
      *
-     * @param message El mensaje con placeholders
-     * @param args Los argumentos a insertar
-     * @return El mensaje formateado
-     */
-    private static String formatMessage(String message, Object... args) {
-        if (args == null || args.length == 0) {
-            return message;
-        }
-
-        String result = message;
-        for (Object arg : args) {
-            result = result.replaceFirst("\\{\\}", arg != null ? arg.toString() : "null");
-        }
-        return result;
-    }
-
-    /**
-     * Enmascara una dirección de correo electrónico para logging seguro.
-     * Si el correo electrónico es nulo o no tiene un formato válido, retorna "invalid-email-format".
-     * De lo contrario, enmascara la parte local del correo, mostrando el primer y el último carácter,
-     * y reemplazando los caracteres intermedios con asteriscos.
-     * Ejemplo: "test.user@pragma.com.co" -> "t***r@pragma.com.co"
-     *
-     * @param email El correo electrónico a enmascarar. Puede ser nulo.
-     * @return El correo electrónico enmascarado si es válido, o "invalid-email-format" en caso contrario.
+     * @param email El correo electrónico a enmascarar.
+     * @return El correo electrónico enmascarado o una máscara si el formato es inválido.
      */
     public static String maskEmail(String email) {
-        if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
-            return "invalid-email-format";
-        }
-        int atIndex = email.indexOf('@');
+        return Optional.ofNullable(email)
+                .filter(e -> EMAIL_PATTERN.matcher(e).matches())
+                .map(LogHelper::performEmailMask)
+                .orElse(INVALID_EMAIL_FORMAT);
+    }
+
+    private static String performEmailMask(String email) {
+        int atIndex = email.indexOf(AT_SIGN);
         String localPart = email.substring(0, atIndex);
+
         if (localPart.length() <= 2) {
-            return "***" + email.substring(atIndex);
+            return MASK_3_CHARS + email.substring(atIndex);
         }
-        // Muestra el primer y último caracter de la parte local para mayor seguridad, como indica el comentario.
-        return localPart.charAt(0) + "***" + localPart.charAt(localPart.length() - 1) + email.substring(atIndex);
+        return EMAIL_MASK_PATTERN.matcher(email).replaceAll(EMAIL_MASK_REPLACEMENT);
     }
 
     /**
-     * Enmascara un número de documento de identidad para logging seguro.
-     * Si el número de documento es nulo o tiene menos de 6 caracteres, retorna "***".
-     * De lo contrario, muestra el primer dígito y el último dígito,
-     * reemplazando los dígitos intermedios con asteriscos.
-     * Para documentos de más de 6 caracteres, muestra los últimos 4 dígitos.
-     * Ejemplo: "123456" -> "1****6", "1234567890" -> "1****7890"
+     * Enmascara un número de documento para un logging seguro.
      *
-     * @param documentId El número de documento a enmascarar. Puede ser nulo.
-     * @return El documento enmascarado si cumple con la longitud mínima, o "***" en caso contrario.
+     * @param documentId El número de documento a enmascarar.
+     * @return El documento enmascarado o una máscara si no cumple la longitud mínima.
      */
     public static String maskDocument(String documentId) {
-        if (documentId == null || documentId.length() < 6) {
-            return "***";
-        }
+        return Optional.ofNullable(documentId)
+                .filter(doc -> doc.length() >= MIN_DOCUMENT_LENGTH)
+                .map(LogHelper::performDocumentMask)
+                .orElse(INVALID_DOCUMENT_FORMAT);
+    }
 
-        // Para documentos de exactamente 6 caracteres, mostrar primer y último dígito
-        if (documentId.length() == 6) {
-            return documentId.charAt(0) + "****" + documentId.charAt(documentId.length() - 1);
+    private static String performDocumentMask(String documentId) {
+        if (documentId.length() == MIN_DOCUMENT_LENGTH) {
+            return documentId.charAt(0) + MASK_4_CHARS + documentId.charAt(documentId.length() - 1);
         }
-
-        // Para documentos más largos, mostrar primer dígito y últimos 4 dígitos
-        return documentId.charAt(0) + "****" + documentId.substring(documentId.length() - 4);
+        return documentId.charAt(0) + MASK_4_CHARS + documentId.substring(documentId.length() - 4);
     }
 }

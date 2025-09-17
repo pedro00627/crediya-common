@@ -1,6 +1,7 @@
 package co.com.pragma.commons.logging;
 
 import co.com.pragma.model.log.gateways.LoggerPort;
+
 /**
  * LogHelperAdapter que define las operaciones de logging y enmascaramiento de datos sensibles.
  * Proporciona métodos para registrar mensajes en diferentes niveles (info, warn, debug, error)
@@ -19,7 +20,7 @@ public class LogHelperAdapter implements LoggerPort {
      * Registra un mensaje informativo.
      *
      * @param message El mensaje a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
     public void info(String message, Object... args) {
@@ -30,7 +31,7 @@ public class LogHelperAdapter implements LoggerPort {
      * Registra un mensaje de advertencia.
      *
      * @param message El mensaje de advertencia a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
     public void warn(String message, Object... args) {
@@ -41,7 +42,7 @@ public class LogHelperAdapter implements LoggerPort {
      * Registra un mensaje de depuración.
      *
      * @param message El mensaje de depuración a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
     public void debug(String message, Object... args) {
@@ -51,7 +52,7 @@ public class LogHelperAdapter implements LoggerPort {
     /**
      * Registra un mensaje de error junto con una excepción.
      *
-     * @param message El mensaje de error a registrar.
+     * @param message   El mensaje de error a registrar.
      * @param throwable La excepción asociada al error.
      */
     @Override

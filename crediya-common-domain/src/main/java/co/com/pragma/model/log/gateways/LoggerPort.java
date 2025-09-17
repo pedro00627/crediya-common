@@ -11,7 +11,7 @@ public interface LoggerPort {
      * Registra un mensaje informativo.
      *
      * @param message El mensaje a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     void info(String message, Object... args);
 
@@ -19,7 +19,7 @@ public interface LoggerPort {
      * Registra un mensaje de advertencia.
      *
      * @param message El mensaje de advertencia a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     void warn(String message, Object... args);
 
@@ -27,14 +27,14 @@ public interface LoggerPort {
      * Registra un mensaje de depuración.
      *
      * @param message El mensaje de depuración a registrar. Puede contener placeholders para los argumentos.
-     * @param args Argumentos opcionales que se usarán para formatear el mensaje.
+     * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     void debug(String message, Object... args);
 
     /**
      * Registra un mensaje de error junto con una excepción.
      *
-     * @param message El mensaje de error a registrar.
+     * @param message   El mensaje de error a registrar.
      * @param throwable La excepción asociada al error.
      */
     void error(String message, Throwable throwable);
