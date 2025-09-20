@@ -27,8 +27,8 @@ public class AuthorizationRule {
     /**
      * Constructor para reglas de autorización basadas en managers.
      *
-     * @param method El método HTTP
-     * @param path La ruta a proteger
+     * @param method          El método HTTP
+     * @param path            La ruta a proteger
      * @param managerBeanName El nombre del bean del authorization manager
      */
     public AuthorizationRule(HttpMethod method, String path, String managerBeanName) {
@@ -41,10 +41,10 @@ public class AuthorizationRule {
     /**
      * Constructor completo para reglas de autorización.
      *
-     * @param method El método HTTP
-     * @param path La ruta a proteger
+     * @param method          El método HTTP
+     * @param path            La ruta a proteger
      * @param managerBeanName El nombre del bean del authorization manager
-     * @param roles Los roles permitidos
+     * @param roles           Los roles permitidos
      */
     public AuthorizationRule(HttpMethod method, String path, String managerBeanName, List<String> roles) {
         this.method = method;
@@ -54,6 +54,7 @@ public class AuthorizationRule {
     }
 
     // Getters y setters
+
     /**
      * Obtiene el método HTTP de la regla de autorización.
      *
@@ -127,6 +128,7 @@ public class AuthorizationRule {
     }
 
     // Métodos de acceso compatibles con el record anterior (mantener solo para retrocompatibilidad)
+
     /**
      * @return El método HTTP (compatibilidad con record)
      * @deprecated Usar {@link #getMethod()} en su lugar

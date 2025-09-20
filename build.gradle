@@ -1,10 +1,13 @@
+// Version management
+ext {
+    springBootVersion = '3.5.6'
+    commonVersion = '0.0.60'
+    jjwtVersion = '0.12.6'
+}
+
 allprojects {
     group = 'co.com.pragma'
-    version = '0.0.53'
-
-    ext {
-        jjwtVersion = '0.12.6' // Version para JWT
-    }
+    version = rootProject.ext.commonVersion
 
     repositories {
         mavenCentral()
@@ -64,6 +67,46 @@ project(':crediya-common-domain') {
     }
 }
 
+project(':crediya-common-core') {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    description = 'Core constants and utilities for CrediYa microservices'
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    dependencies {
+        implementation project(':crediya-common-domain')
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifactId = 'crediya-common-core'
+                pom {
+                    name.set('CrediYa Common Core')
+                    description.set(project.description)
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/pedro00627/crediya-common")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+}
+
 project(':crediya-common-security') {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
@@ -80,8 +123,9 @@ project(':crediya-common-security') {
         implementation project(':crediya-common-starter') // Added this line
         implementation 'io.projectreactor:reactor-core' // Added this line
 
-        api platform('org.springframework.boot:spring-boot-dependencies:3.2.5')
+        api platform("org.springframework.boot:spring-boot-dependencies:${rootProject.ext.springBootVersion}")
         api 'org.springframework.boot:spring-boot-starter-security'
+        api 'org.apache.commons:commons-lang3:3.18.0'
 
         api "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
         runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
@@ -129,9 +173,12 @@ project(':crediya-common-starter') {
 
     dependencies {
         implementation project(':crediya-common-domain')
+        implementation project(':crediya-common-core')
 
-        api platform('org.springframework.boot:spring-boot-dependencies:3.2.5')
+        api platform("org.springframework.boot:spring-boot-dependencies:${rootProject.ext.springBootVersion}")
         api 'org.springframework.boot:spring-boot-autoconfigure'
+        api 'org.springframework.boot:spring-boot-starter-webflux'
+        api 'org.springframework:spring-web'
 
         api 'org.apache.logging.log4j:log4j-api'
         api 'org.apache.logging.log4j:log4j-core'

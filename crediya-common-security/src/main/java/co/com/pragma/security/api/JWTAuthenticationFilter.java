@@ -37,8 +37,8 @@ public class JWTAuthenticationFilter implements WebFilter {
     /**
      * Constructor para el filtro de autenticación JWT.
      *
-     * @param jwtUtil Utilidad para el manejo de tokens JWT
-     * @param logger Puerto de logging para registrar eventos
+     * @param jwtUtil       Utilidad para el manejo de tokens JWT
+     * @param logger        Puerto de logging para registrar eventos
      * @param jwtProperties Propiedades de configuración JWT
      */
     public JWTAuthenticationFilter(JWTUtil jwtUtil, LoggerPort logger, JWTProperties jwtProperties) {

@@ -1,1 +1,2 @@
 co.com.pragma.commons.config.PragmaCommonsAutoConfiguration
+co.com.pragma.starter.config.CorsAutoConfiguration

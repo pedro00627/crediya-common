@@ -14,7 +14,7 @@ public final class PathMatcher {
      * Verifica si un path coincide con un patrón dado.
      * Soporta patrones con wildcards como "/api/v1/**"
      *
-     * @param path El path a verificar
+     * @param path    El path a verificar
      * @param pattern El patrón a comparar
      * @return true si el path coincide con el patrón
      */
@@ -34,7 +34,7 @@ public final class PathMatcher {
     /**
      * Verifica si un path está cubierto por alguno de los patrones en una lista.
      *
-     * @param path El path a verificar
+     * @param path     El path a verificar
      * @param patterns Lista de patrones a comparar
      * @return true si el path coincide con algún patrón
      */
