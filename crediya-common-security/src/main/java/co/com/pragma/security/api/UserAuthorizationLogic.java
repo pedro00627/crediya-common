@@ -29,12 +29,12 @@ public class UserAuthorizationLogic {
      * @param authentication Un {@link Mono} que emite la información de autenticación del usuario.
      * @return Un {@link Mono} que emite un {@link AuthorizationDecision} indicando si la autorización es concedida o denegada.
      */
-    public Mono<AuthorizationDecision> authorize(Mono<Authentication> authentication) {
+    public Mono<AuthorizationDecision> authorize(final Mono<Authentication> authentication) {
         return authentication
                 .filter(Authentication::isAuthenticated)
                 .flatMapIterable(Authentication::getAuthorities)
                 .map(GrantedAuthority::getAuthority)
-                .any(REQUIRED_ROLES::contains)
+                .any(UserAuthorizationLogic.REQUIRED_ROLES::contains)
                 .map(AuthorizationDecision::new)
                 .defaultIfEmpty(new AuthorizationDecision(false));
     }

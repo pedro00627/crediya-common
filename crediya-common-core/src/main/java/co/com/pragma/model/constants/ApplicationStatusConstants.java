@@ -6,7 +6,8 @@ import java.util.List;
  * Constantes para los estados de las solicitudes de crédito.
  * Define los estados válidos y sus transiciones según las reglas de negocio.
  */
-public final class ApplicationStatusConstants {
+public enum ApplicationStatusConstants {
+    ;
 
     // Status IDs (corresponden a los IDs en la base de datos)
     public static final Integer PENDING_STATUS_ID = 1;
@@ -31,24 +32,21 @@ public final class ApplicationStatusConstants {
 
     // Status Lists for business logic
     public static final List<Integer> TERMINAL_STATUS_IDS = List.of(
-            APPROVED_STATUS_ID,
-            REJECTED_STATUS_ID,
-            CANCELLED_STATUS_ID
+            ApplicationStatusConstants.APPROVED_STATUS_ID,
+            ApplicationStatusConstants.REJECTED_STATUS_ID,
+            ApplicationStatusConstants.CANCELLED_STATUS_ID
     );
 
     public static final List<Integer> PENDING_REVIEW_STATUS_IDS = List.of(
-            PENDING_STATUS_ID,
-            REJECTED_STATUS_ID,
-            MANUAL_REVIEW_STATUS_ID
+            ApplicationStatusConstants.PENDING_STATUS_ID,
+            ApplicationStatusConstants.REJECTED_STATUS_ID,
+            ApplicationStatusConstants.MANUAL_REVIEW_STATUS_ID
     );
 
     public static final List<String> ADVISOR_REVIEWABLE_STATUSES = List.of(
-            PENDING_STATUS_DESCRIPTION,
-            REJECTED_STATUS_DESCRIPTION,
-            MANUAL_REVIEW_STATUS_DESCRIPTION
+            ApplicationStatusConstants.PENDING_STATUS_DESCRIPTION,
+            ApplicationStatusConstants.REJECTED_STATUS_DESCRIPTION,
+            ApplicationStatusConstants.MANUAL_REVIEW_STATUS_DESCRIPTION
     );
 
-    private ApplicationStatusConstants() {
-        // Utility class - prevent instantiation
-    }
 }

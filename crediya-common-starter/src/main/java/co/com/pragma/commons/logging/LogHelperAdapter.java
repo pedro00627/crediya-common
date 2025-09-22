@@ -23,7 +23,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
-    public void info(String message, Object... args) {
+    public void info(final String message, final Object... args) {
         LogHelper.info(message, args);
     }
 
@@ -34,7 +34,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
-    public void warn(String message, Object... args) {
+    public void warn(final String message, final Object... args) {
         LogHelper.warn(message, args);
     }
 
@@ -45,7 +45,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @param args    Argumentos opcionales que se usarán para formatear el mensaje.
      */
     @Override
-    public void debug(String message, Object... args) {
+    public void debug(final String message, final Object... args) {
         LogHelper.debug(message, args);
     }
 
@@ -56,7 +56,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @param throwable La excepción asociada al error.
      */
     @Override
-    public void error(String message, Throwable throwable) {
+    public void error(final String message, final Throwable throwable) {
         LogHelper.error(message, throwable);
     }
 
@@ -68,7 +68,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @return El correo electrónico enmascarado o un indicador de formato inválido si no es un correo válido.
      */
     @Override
-    public String maskEmail(String email) {
+    public String maskEmail(final String email) {
         return LogHelper.maskEmail(email);
     }
 
@@ -80,7 +80,7 @@ public class LogHelperAdapter implements LoggerPort {
      * @return El documento enmascarado o un indicador de formato inválido si no cumple con la longitud mínima.
      */
     @Override
-    public String maskDocument(String documentId) {
+    public String maskDocument(final String documentId) {
         return LogHelper.maskDocument(documentId);
     }
 }

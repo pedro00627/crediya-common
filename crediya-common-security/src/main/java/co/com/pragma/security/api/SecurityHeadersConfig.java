@@ -29,8 +29,8 @@ public class SecurityHeadersConfig implements WebFilter {
      * @return Un {@link Mono} que indica la finalización del procesamiento del filtro.
      */
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        HttpHeaders headers = exchange.getResponse().getHeaders();
+    public Mono<Void> filter(final ServerWebExchange exchange, final WebFilterChain chain) {
+        final HttpHeaders headers = exchange.getResponse().getHeaders();
         headers.set("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'; form-action 'self'");
         headers.set("Strict-Transport-Security", "max-age=31536000;");
         headers.set("X-Content-Type-Options", "nosniff");

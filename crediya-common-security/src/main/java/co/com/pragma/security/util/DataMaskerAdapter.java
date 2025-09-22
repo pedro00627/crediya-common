@@ -24,7 +24,7 @@ public class DataMaskerAdapter implements DataMaskerPort {
      * Esta implementación delega la operación de enmascaramiento a {@link LogHelper}.
      */
     @Override
-    public String maskEmail(String email) {
+    public String maskEmail(final String email) {
         return LogHelper.maskEmail(email);
     }
 }

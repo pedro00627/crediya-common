@@ -14,6 +14,8 @@ allprojects {
     }
 
     apply plugin: 'java'
+    apply plugin: 'jacoco'
+
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(21))
@@ -24,6 +26,70 @@ allprojects {
         resolutionStrategy {
             force 'org.springframework:spring-beans:6.2.10'
         }
+    }
+
+    jacoco {
+        toolVersion = "0.8.11"
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required = true
+            csv.required = false
+            html.required = true
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestCoverageVerification {
+        dependsOn jacocoTestReport
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.80 // 80% coverage threshold
+                }
+            }
+        }
+    }
+}
+
+// Task to run all tests and generate coverage reports
+task testAll {
+    group = 'verification'
+    description = 'Runs all tests across all subprojects and generates coverage reports'
+    dependsOn subprojects.collect { it.tasks.withType(Test) }
+    dependsOn subprojects.collect { it.tasks.named('jacocoTestReport') }
+}
+
+// Task to generate consolidated coverage report
+task jacocoRootReport(type: JacocoReport) {
+    group = 'verification'
+    description = 'Generates consolidated JaCoCo coverage report for all subprojects'
+    dependsOn testAll
+
+    getAdditionalSourceDirs().from(subprojects.collect { project ->
+        project.sourceSets.main.allSource.srcDirs
+    })
+    getSourceDirectories().from(subprojects.collect { project ->
+        project.sourceSets.main.allSource.srcDirs
+    })
+    getClassDirectories().from(subprojects.collect { project ->
+        project.sourceSets.main.output
+    })
+    getExecutionData().from(subprojects.collect { project ->
+        project.fileTree(dir: "${project.buildDir}/jacoco", includes: ['*.exec'])
+    })
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
     }
 }
 
@@ -39,7 +105,10 @@ project(':crediya-common-domain') {
     }
 
     dependencies {
-        // No dependencies specific to domain module itself, or add them here
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+        testImplementation 'org.mockito:mockito-core:5.8.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
     publishing {
@@ -80,6 +149,11 @@ project(':crediya-common-core') {
 
     dependencies {
         implementation project(':crediya-common-domain')
+
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+        testImplementation 'org.mockito:mockito-core:5.8.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
     publishing {
@@ -120,8 +194,9 @@ project(':crediya-common-security') {
 
     dependencies {
         implementation project(':crediya-common-domain')
-        implementation project(':crediya-common-starter') // Added this line
-        implementation 'io.projectreactor:reactor-core' // Added this line
+        implementation project(':crediya-common-core') // Added for constants access
+        implementation project(':crediya-common-starter')
+        implementation 'io.projectreactor:reactor-core'
 
         api platform("org.springframework.boot:spring-boot-dependencies:${rootProject.ext.springBootVersion}")
         api 'org.springframework.boot:spring-boot-starter-security'
@@ -132,6 +207,10 @@ project(':crediya-common-security') {
         runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
         testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+        testImplementation 'org.mockito:mockito-core:5.8.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'io.projectreactor:reactor-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
@@ -185,6 +264,9 @@ project(':crediya-common-starter') {
         api 'org.apache.logging.log4j:log4j-layout-template-json'
 
         testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+        testImplementation 'org.mockito:mockito-core:5.8.0'
+        testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 

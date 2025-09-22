@@ -41,7 +41,7 @@ public interface JWTProperties {
      * @return La clave secreta generada para JWT
      */
     default SecretKey secretKey() {
-        return Keys.hmacShaKeyFor(secret().getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(this.secret().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -50,7 +50,7 @@ public interface JWTProperties {
      * @return El tiempo de expiración del JWT (compatibilidad)
      */
     default Long getJwtExpiration() {
-        return expiration();
+        return this.expiration();
     }
 
     /**
@@ -59,7 +59,7 @@ public interface JWTProperties {
      * @param rulePath La ruta a verificar
      * @return true si la ruta está excluida
      */
-    default boolean isPathCoveredByExcluded(String rulePath) {
-        return PathMatcher.matchesAny(rulePath, excludedPaths());
+    default boolean isPathCoveredByExcluded(final String rulePath) {
+        return PathMatcher.matchesAny(rulePath, this.excludedPaths());
     }
 }

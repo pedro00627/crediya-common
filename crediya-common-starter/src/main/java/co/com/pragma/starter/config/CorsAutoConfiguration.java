@@ -22,7 +22,7 @@ public class CorsAutoConfiguration {
      */
     @Bean
     public CorsWebFilter corsWebFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOriginPatterns(
                 List.of("http://localhost:4200", "http://localhost:8080", "http://localhost:8081", "http://localhost:8082")
@@ -31,7 +31,7 @@ public class CorsAutoConfiguration {
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
         return new CorsWebFilter(source);

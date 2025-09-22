@@ -41,86 +41,83 @@ public class JWTAuthenticationFilter implements WebFilter {
      * @param logger        Puerto de logging para registrar eventos
      * @param jwtProperties Propiedades de configuración JWT
      */
-    public JWTAuthenticationFilter(JWTUtil jwtUtil, LoggerPort logger, JWTProperties jwtProperties) {
+    public JWTAuthenticationFilter(final JWTUtil jwtUtil, final LoggerPort logger, final JWTProperties jwtProperties) {
         this.jwtUtil = jwtUtil;
         this.logger = logger;
         this.jwtProperties = jwtProperties;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
-        String path = exchange.getRequest().getPath().value();
-        logger.debug("JWTAuthenticationFilter.filter() - Processing path: {}", path);
+    public Mono<Void> filter(@NonNull final ServerWebExchange exchange, @NonNull final WebFilterChain chain) {
+        final String path = exchange.getRequest().getPath().value();
+        this.logger.debug("JWTAuthenticationFilter.filter() - Processing path: {}", path);
 
         // Verificar si la ruta está excluida de la autenticación JWT
-        if (isPathExcluded(path)) {
-            logger.debug("JWTAuthenticationFilter.filter() - Path {} is excluded from JWT authentication. Proceeding without authentication.", path);
+        if (this.isPathExcluded(path)) {
+            this.logger.debug("JWTAuthenticationFilter.filter() - Path {} is excluded from JWT authentication. Proceeding without authentication.", path);
             return chain.filter(exchange);
         }
 
-        return extractToken(exchange)
-                .doOnNext(token -> logger.debug("JWTAuthenticationFilter.extractToken() - Token extracted for path: {}, token length: {}", path, token.length()))
-                .doOnError(e -> logger.warn("JWTAuthenticationFilter.extractToken() - Failed to extract token for path: {}, error: {}", path, e.getMessage()))
+        return this.extractToken(exchange)
+                .doOnNext(token -> this.logger.debug("JWTAuthenticationFilter.extractToken() - Token extracted for path: {}, token length: {}", path, token.length()))
+                .doOnError(e -> this.logger.warn("JWTAuthenticationFilter.extractToken() - Failed to extract token for path: {}, error: {}", path, e.getMessage()))
                 .flatMap(this::validateAndCreateAuthentication)
-                .doOnNext(auth -> logger.debug("JWTAuthenticationFilter.validateAndCreateAuthentication() - Authentication successful for user: {} with authorities: {}", auth.getName(), auth.getAuthorities()))
-                .doOnError(e -> logger.warn("JWTAuthenticationFilter.validateAndCreateAuthentication() - Token validation failed for path: {}, error: {}", path, e.getMessage()))
+                .doOnNext(auth -> this.logger.debug("JWTAuthenticationFilter.validateAndCreateAuthentication() - Authentication successful for user: {} with authorities: {}", auth.getName(), auth.getAuthorities()))
+                .doOnError(e -> this.logger.warn("JWTAuthenticationFilter.validateAndCreateAuthentication() - Token validation failed for path: {}, error: {}", path, e.getMessage()))
                 .flatMap(authentication -> chain.filter(exchange)
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication)))
                 .switchIfEmpty(Mono.defer(() -> {
-                    logger.warn("JWTAuthenticationFilter.filter() - JWT authentication failed or no token found for path: {}. Returning UNAUTHORIZED.", path);
-                    return setUnauthorized(exchange);
+                    this.logger.warn("JWTAuthenticationFilter.filter() - JWT authentication failed or no token found for path: {}. Returning UNAUTHORIZED.", path);
+                    return this.setUnauthorized(exchange);
                 }));
     }
 
-    private Mono<String> extractToken(ServerWebExchange exchange) {
+    private Mono<String> extractToken(final ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
                 .filter(header -> header.startsWith("Bearer "))
                 .map(header -> header.substring(7));
     }
 
-    private Mono<Authentication> validateAndCreateAuthentication(String token) {
-        return Mono.fromCallable(() -> jwtUtil.extractAllClaims(token))
+    private Mono<Authentication> validateAndCreateAuthentication(final String token) {
+        return Mono.fromCallable(() -> this.jwtUtil.extractAllClaims(token))
                 .map(this::createAuthFromClaims)
                 .flatMap(optional -> optional.map(Mono::just).orElse(Mono.empty()))
                 .onErrorResume(e -> {
-                    logger.warn("Token validation failed: {}", e.getMessage());
+                    this.logger.warn("Token validation failed: {}", e.getMessage());
                     return Mono.empty();
                 });
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Authentication> createAuthFromClaims(Claims claims) {
-        logger.debug("Claims extracted: Subject={}, Roles={}", claims.getSubject(), claims.get(JWTUtil.ROLES_CLAIM, List.class));
+    private Optional<Authentication> createAuthFromClaims(final Claims claims) {
+        this.logger.debug("Claims extracted: Subject={}, Roles={}", claims.getSubject(), claims.get(JWTUtil.ROLES_CLAIM, List.class));
 
         return Optional.ofNullable(claims.getSubject())
                 .flatMap(username -> {
-                    List<String> roles = claims.get(JWTUtil.ROLES_CLAIM, List.class);
-                    if (roles == null || roles.isEmpty()) {
-                        logger.warn("No roles found for user {}. Authentication will fail.", username);
+                    final List<String> roles = claims.get(JWTUtil.ROLES_CLAIM, List.class);
+                    if (null == roles || roles.isEmpty()) {
+                        this.logger.warn("No roles found for user {}. Authentication will fail.", username);
                         return Optional.empty();
                     }
-                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                    final List<SimpleGrantedAuthority> authorities = roles.stream()
                             .peek(role -> {
                                 if (!role.matches("^[A-Z_]+$")) {
-                                    logger.warn("Invalid role format: {}. Roles should contain only uppercase letters and underscores.", role);
+                                    this.logger.warn("Invalid role format: {}. Roles should contain only uppercase letters and underscores.", role);
                                 }
                             })
                             .map(role -> new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role))
                             .toList();
-                    Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    logger.debug("Authentication object created for user {}: Authorities={}", username, authorities);
+                    final Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    this.logger.debug("Authentication object created for user {}: Authorities={}", username, authorities);
                     return Optional.of(auth);
                 });
     }
 
-    private boolean isPathExcluded(String path) {
-        return PathMatcher.matchesAny(path, jwtProperties.excludedPaths());
+    private boolean isPathExcluded(final String path) {
+        return PathMatcher.matchesAny(path, this.jwtProperties.excludedPaths());
     }
 
-    private Mono<Void> setUnauthorized(ServerWebExchange exchange) {
+    private Mono<Void> setUnauthorized(final ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         return exchange.getResponse().setComplete();
     }

@@ -18,7 +18,7 @@ public record ErrorBody(
      * @param message    Error message
      * @return ErrorBody instance
      */
-    public static ErrorBody create(int statusCode, String error, String message) {
+    public static ErrorBody create(final int statusCode, final String error, final String message) {
         return new ErrorBody(statusCode, error, message, null);
     }
 
@@ -31,7 +31,7 @@ public record ErrorBody(
      * @param details    Additional error details
      * @return ErrorBody instance
      */
-    public static ErrorBody create(int statusCode, String error, String message, String details) {
+    public static ErrorBody create(final int statusCode, final String error, final String message, final String details) {
         return new ErrorBody(statusCode, error, message, details);
     }
 }

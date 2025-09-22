@@ -11,18 +11,19 @@ import java.util.regex.Pattern;
  * Proporciona métodos estáticos para logging y enmascarar información sensible
  * como correos electrónicos y números de documento antes de ser registrados.
  */
-public final class LogHelper {
+public enum LogHelper {
+    ;
 
     private static final Logger logger = LogManager.getLogger(LogHelper.class);
 
     // Constantes de enmascaramiento
     private static final char MASK_CHAR = '*';
-    private static final String MASK_3_CHARS = String.valueOf(MASK_CHAR).repeat(3);
-    private static final String INVALID_EMAIL_FORMAT = MASK_3_CHARS;
-    private static final String EMAIL_MASK_REPLACEMENT = "$1" + MASK_3_CHARS + "$3";
+    private static final String MASK_3_CHARS = String.valueOf(LogHelper.MASK_CHAR).repeat(3);
+    private static final String INVALID_EMAIL_FORMAT = LogHelper.MASK_3_CHARS;
+    private static final String EMAIL_MASK_REPLACEMENT = "$1" + LogHelper.MASK_3_CHARS + "$3";
     // Constantes para enmascaramiento de documento
-    private static final String INVALID_DOCUMENT_FORMAT = MASK_3_CHARS;
-    private static final String MASK_4_CHARS = String.valueOf(MASK_CHAR).repeat(4);
+    private static final String INVALID_DOCUMENT_FORMAT = LogHelper.MASK_3_CHARS;
+    private static final String MASK_4_CHARS = String.valueOf(LogHelper.MASK_CHAR).repeat(4);
     // Constantes para enmascaramiento de email
     private static final char AT_SIGN = '@';
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
@@ -31,19 +32,15 @@ public final class LogHelper {
     private static final Pattern EMAIL_MASK_PATTERN = Pattern.compile("(^.)(.*)(.@.*$)");
     private static final int MIN_DOCUMENT_LENGTH = 6;
 
-    private LogHelper() {
-        // Private constructor for utility class
-    }
-
     /**
      * Registra un mensaje a nivel INFO.
      *
      * @param message El mensaje a registrar, puede contener placeholders `{}`.
      * @param args    Los argumentos para los placeholders.
      */
-    public static void info(String message, Object... args) {
-        if (logger.isInfoEnabled()) {
-            logger.info(message, args);
+    public static void info(final String message, final Object... args) {
+        if (LogHelper.logger.isInfoEnabled()) {
+            LogHelper.logger.info(message, args);
         }
     }
 
@@ -53,9 +50,9 @@ public final class LogHelper {
      * @param message El mensaje a registrar, puede contener placeholders `{}`.
      * @param args    Los argumentos para los placeholders.
      */
-    public static void warn(String message, Object... args) {
-        if (logger.isWarnEnabled()) {
-            logger.warn(message, args);
+    public static void warn(final String message, final Object... args) {
+        if (LogHelper.logger.isWarnEnabled()) {
+            LogHelper.logger.warn(message, args);
         }
     }
 
@@ -65,9 +62,9 @@ public final class LogHelper {
      * @param message El mensaje a registrar, puede contener placeholders `{}`.
      * @param args    Los argumentos para los placeholders.
      */
-    public static void debug(String message, Object... args) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(message, args);
+    public static void debug(final String message, final Object... args) {
+        if (LogHelper.logger.isDebugEnabled()) {
+            LogHelper.logger.debug(message, args);
         }
     }
 
@@ -77,8 +74,8 @@ public final class LogHelper {
      * @param message   El mensaje de error.
      * @param throwable La excepción a registrar.
      */
-    public static void error(String message, Throwable throwable) {
-        logger.error(message, throwable);
+    public static void error(final String message, final Throwable throwable) {
+        LogHelper.logger.error(message, throwable);
     }
 
     /**
@@ -87,21 +84,21 @@ public final class LogHelper {
      * @param email El correo electrónico a enmascarar.
      * @return El correo electrónico enmascarado o una máscara si el formato es inválido.
      */
-    public static String maskEmail(String email) {
+    public static String maskEmail(final String email) {
         return Optional.ofNullable(email)
-                .filter(e -> EMAIL_PATTERN.matcher(e).matches())
+                .filter(e -> LogHelper.EMAIL_PATTERN.matcher(e).matches())
                 .map(LogHelper::performEmailMask)
-                .orElse(INVALID_EMAIL_FORMAT);
+                .orElse(LogHelper.INVALID_EMAIL_FORMAT);
     }
 
-    private static String performEmailMask(String email) {
-        int atIndex = email.indexOf(AT_SIGN);
-        String localPart = email.substring(0, atIndex);
+    private static String performEmailMask(final String email) {
+        final int atIndex = email.indexOf(LogHelper.AT_SIGN);
+        final String localPart = email.substring(0, atIndex);
 
-        if (localPart.length() <= 2) {
-            return MASK_3_CHARS + email.substring(atIndex);
+        if (2 >= localPart.length()) {
+            return LogHelper.MASK_3_CHARS + email.substring(atIndex);
         }
-        return EMAIL_MASK_PATTERN.matcher(email).replaceAll(EMAIL_MASK_REPLACEMENT);
+        return LogHelper.EMAIL_MASK_PATTERN.matcher(email).replaceAll(LogHelper.EMAIL_MASK_REPLACEMENT);
     }
 
     /**
@@ -110,17 +107,17 @@ public final class LogHelper {
      * @param documentId El número de documento a enmascarar.
      * @return El documento enmascarado o una máscara si no cumple la longitud mínima.
      */
-    public static String maskDocument(String documentId) {
+    public static String maskDocument(final String documentId) {
         return Optional.ofNullable(documentId)
-                .filter(doc -> doc.length() >= MIN_DOCUMENT_LENGTH)
+                .filter(doc -> MIN_DOCUMENT_LENGTH <= doc.length())
                 .map(LogHelper::performDocumentMask)
-                .orElse(INVALID_DOCUMENT_FORMAT);
+                .orElse(LogHelper.INVALID_DOCUMENT_FORMAT);
     }
 
-    private static String performDocumentMask(String documentId) {
-        if (documentId.length() == MIN_DOCUMENT_LENGTH) {
-            return documentId.charAt(0) + MASK_4_CHARS + documentId.charAt(documentId.length() - 1);
+    private static String performDocumentMask(final String documentId) {
+        if (MIN_DOCUMENT_LENGTH == documentId.length()) {
+            return documentId.charAt(0) + LogHelper.MASK_4_CHARS + documentId.charAt(documentId.length() - 1);
         }
-        return documentId.charAt(0) + MASK_4_CHARS + documentId.substring(documentId.length() - 4);
+        return documentId.charAt(0) + LogHelper.MASK_4_CHARS + documentId.substring(documentId.length() - 4);
     }
 }

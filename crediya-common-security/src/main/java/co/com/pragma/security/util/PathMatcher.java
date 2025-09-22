@@ -4,11 +4,8 @@ package co.com.pragma.security.util;
  * Utilidad para el matching de paths en configuraciones de seguridad.
  * Centraliza la lógica de comparación de rutas para evitar duplicación.
  */
-public final class PathMatcher {
-
-    private PathMatcher() {
-        // Utility class
-    }
+public enum PathMatcher {
+    ;
 
     /**
      * Verifica si un path coincide con un patrón dado.
@@ -18,13 +15,13 @@ public final class PathMatcher {
      * @param pattern El patrón a comparar
      * @return true si el path coincide con el patrón
      */
-    public static boolean matches(String path, String pattern) {
-        if (path == null || pattern == null) {
+    public static boolean matches(final String path, final String pattern) {
+        if (null == path || null == pattern) {
             return false;
         }
 
         if (pattern.endsWith("/**")) {
-            String prefix = pattern.substring(0, pattern.length() - 3);
+            final String prefix = pattern.substring(0, pattern.length() - 3);
             return path.startsWith(prefix);
         }
 
@@ -38,12 +35,12 @@ public final class PathMatcher {
      * @param patterns Lista de patrones a comparar
      * @return true si el path coincide con algún patrón
      */
-    public static boolean matchesAny(String path, java.util.List<String> patterns) {
-        if (path == null || patterns == null || patterns.isEmpty()) {
+    public static boolean matchesAny(final String path, final java.util.List<String> patterns) {
+        if (null == path || null == patterns || patterns.isEmpty()) {
             return false;
         }
 
         return patterns.stream()
-                .anyMatch(pattern -> matches(path, pattern));
+                .anyMatch(pattern -> PathMatcher.matches(path, pattern));
     }
 }

@@ -4,7 +4,8 @@ package co.com.pragma.model.constants;
  * Constantes para parámetros de consulta utilizados en las APIs.
  * Centraliza los nombres de parámetros para mantener consistencia.
  */
-public final class QueryParameterConstants {
+public enum QueryParameterConstants {
+    ;
 
     // User-related query parameters
     public static final String EMAIL = "email";
@@ -32,7 +33,4 @@ public final class QueryParameterConstants {
     public static final String SEARCH = "search";
     public static final String FILTER = "filter";
 
-    private QueryParameterConstants() {
-        // Utility class - prevent instantiation
-    }
 }

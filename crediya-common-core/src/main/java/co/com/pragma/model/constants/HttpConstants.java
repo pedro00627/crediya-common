@@ -4,7 +4,8 @@ package co.com.pragma.model.constants;
  * Constantes relacionadas con HTTP: headers, content types, y otros valores HTTP.
  * Centraliza las definiciones para mantener consistencia en las comunicaciones HTTP.
  */
-public final class HttpConstants {
+public enum HttpConstants {
+    ;
 
     // HTTP Headers
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -68,7 +69,4 @@ public final class HttpConstants {
     public static final String EMAIL_PARAM = "email";
     public static final String IDENTITY_DOCUMENT_PARAM = "identityDocument";
 
-    private HttpConstants() {
-        // Utility class - prevent instantiation
-    }
 }

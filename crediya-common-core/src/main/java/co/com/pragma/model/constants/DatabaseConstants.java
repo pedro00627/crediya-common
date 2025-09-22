@@ -4,7 +4,8 @@ package co.com.pragma.model.constants;
  * Constantes para esquemas, tablas y campos de la base de datos.
  * Centraliza las definiciones para evitar errores de tipeo y facilitar refactoring.
  */
-public final class DatabaseConstants {
+public enum DatabaseConstants {
+    ;
 
     // Database Schemas
     public static final String AUTHENTICATION_SCHEMA = "autenticacion";
@@ -59,7 +60,4 @@ public final class DatabaseConstants {
     public static final String ROLE_NAME_COLUMN = "nombre";
     public static final String ROLE_DESCRIPTION_COLUMN = "descripcion";
 
-    private DatabaseConstants() {
-        // Utility class - prevent instantiation
-    }
 }

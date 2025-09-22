@@ -17,7 +17,7 @@ public class AuthorizationRuleTypeResolver {
      *
      * @param logger El puerto de logging para registrar eventos.
      */
-    public AuthorizationRuleTypeResolver(LoggerPort logger) {
+    public AuthorizationRuleTypeResolver(final LoggerPort logger) {
         this.logger = logger;
     }
 
@@ -30,21 +30,21 @@ public class AuthorizationRuleTypeResolver {
      * @param rule La regla de autorización a evaluar.
      * @return El {@link AuthorizationRuleType} que corresponde a la regla.
      */
-    public AuthorizationRuleType determineRuleType(AuthorizationRule rule) {
-        logger.debug("Determining rule type for path: {} method: {} manager: {}", rule.path(), rule.method(), rule.managerBeanName());
+    public AuthorizationRuleType determineRuleType(final AuthorizationRule rule) {
+        this.logger.debug("Determining rule type for path: {} method: {} manager: {}", rule.path(), rule.method(), rule.managerBeanName());
 
-        if (isManagerRule(rule)) {
-            logger.debug("Rule for path {} is MANAGER.", rule.path());
+        if (this.isManagerRule(rule)) {
+            this.logger.debug("Rule for path {} is MANAGER.", rule.path());
             return AuthorizationRuleType.MANAGER;
         }
 
-        if (isRoleRule(rule)) {
-            logger.debug("Rule for path {} is ROLE.", rule.path());
+        if (this.isRoleRule(rule)) {
+            this.logger.debug("Rule for path {} is ROLE.", rule.path());
             return AuthorizationRuleType.ROLE;
 
         }
 
-        logger.debug("Rule for path {} is DENY_ALL (fallback).", rule.path());
+        this.logger.debug("Rule for path {} is DENY_ALL (fallback).", rule.path());
         return AuthorizationRuleType.DENY_ALL;
     }
 
@@ -54,9 +54,9 @@ public class AuthorizationRuleTypeResolver {
      * @param rule La regla de autorización.
      * @return true si es una regla MANAGER, false en caso contrario.
      */
-    private boolean isManagerRule(AuthorizationRule rule) {
-        boolean isManager = rule.managerBeanName() != null && !rule.managerBeanName().isEmpty();
-        logger.debug("isManagerRule for path {}: {}", rule.path(), isManager);
+    private boolean isManagerRule(final AuthorizationRule rule) {
+        final boolean isManager = null != rule.managerBeanName() && !rule.managerBeanName().isEmpty();
+        this.logger.debug("isManagerRule for path {}: {}", rule.path(), isManager);
         return isManager;
     }
 
@@ -66,9 +66,9 @@ public class AuthorizationRuleTypeResolver {
      * @param rule La regla de autorización.
      * @return true si es una regla MANAGER, false en caso contrario.
      */
-    private boolean isRoleRule(AuthorizationRule rule) {
-        boolean isRole = rule.roles() != null && !rule.roles().isEmpty();
-        logger.debug("isManagerRule for path {}: {}", rule.path(), isRole);
+    private boolean isRoleRule(final AuthorizationRule rule) {
+        final boolean isRole = null != rule.roles() && !rule.roles().isEmpty();
+        this.logger.debug("isManagerRule for path {}: {}", rule.path(), isRole);
         return isRole;
     }
 }

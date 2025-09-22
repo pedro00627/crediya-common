@@ -4,7 +4,8 @@ package co.com.pragma.model.constants;
  * Constantes para endpoints y rutas de la API.
  * Centraliza las definiciones de URLs para mantener consistencia entre microservicios.
  */
-public final class ApiConstants {
+public enum ApiConstants {
+    ;
 
     // Base paths
     public static final String API_BASE_PATH = "/api";
@@ -32,7 +33,4 @@ public final class ApiConstants {
     public static final String WEBJARS_PATH = "/webjars/**";
     public static final String API_DOCS_PATH = "/v3/api-docs/**";
 
-    private ApiConstants() {
-        // Utility class - prevent instantiation
-    }
 }

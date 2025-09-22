@@ -29,7 +29,7 @@ public class JWTUtil {
      *
      * @param jwtConfig Configuración de JWT que contiene la clave secreta y el tiempo de expiración.
      */
-    public JWTUtil(JWTProperties jwtConfig) {
+    public JWTUtil(final JWTProperties jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
 
@@ -40,22 +40,22 @@ public class JWTUtil {
      * @param roles    La lista de roles a incluir en el token.
      * @return El token JWT generado como una cadena de texto.
      */
-    public String generateToken(String username, List<String> roles) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(ROLES_CLAIM, roles);
-        return createToken(claims, username);
+    public String generateToken(final String username, final List<String> roles) {
+        final Map<String, Object> claims = new HashMap<>();
+        claims.put(JWTUtil.ROLES_CLAIM, roles);
+        return this.createToken(claims, username);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-        final Date now = new Date();
-        final Date expiration = new Date(now.getTime() + jwtConfig.getJwtExpiration());
+    private String createToken(final Map<String, Object> claims, final String subject) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + this.jwtConfig.getJwtExpiration());
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(now)
                 .expiration(expiration)
-                .signWith(jwtConfig.secretKey())
+                .signWith(this.jwtConfig.secretKey())
                 .compact();
     }
 
@@ -66,9 +66,9 @@ public class JWTUtil {
      * @param username El nombre de usuario esperado en el token.
      * @return {@code true} si el token es válido y corresponde al usuario, {@code false} en caso contrario.
      */
-    public Boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public Boolean validateToken(final String token, final String username) {
+        String extractedUsername = this.extractUsername(token);
+        return (extractedUsername.equals(username) && !this.isTokenExpired(token));
     }
 
     /**
@@ -77,8 +77,8 @@ public class JWTUtil {
      * @param token El token JWT del cual extraer el nombre de usuario.
      * @return El nombre de usuario.
      */
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractUsername(final String token) {
+        return this.extractClaim(token, Claims::getSubject);
     }
 
     /**
@@ -88,8 +88,8 @@ public class JWTUtil {
      * @return Una lista de cadenas que representan los roles.
      */
     @SuppressWarnings("unchecked")
-    public List<String> extractRoles(String token) {
-        return extractClaim(token, claims -> claims.get(ROLES_CLAIM, List.class));
+    public List<String> extractRoles(final String token) {
+        return this.extractClaim(token, claims -> claims.get(JWTUtil.ROLES_CLAIM, List.class));
     }
 
     /**
@@ -98,12 +98,12 @@ public class JWTUtil {
      * @param token El token JWT del cual extraer la fecha de expiración.
      * @return La fecha de expiración.
      */
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public Date extractExpiration(final String token) {
+        return this.extractClaim(token, Claims::getExpiration);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+    private <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
+        Claims claims = this.extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
@@ -113,15 +113,15 @@ public class JWTUtil {
      * @param token El token JWT del cual extraer todos los claims.
      * @return Un objeto {@link Claims} que contiene todos los claims del token.
      */
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(final String token) {
         return Jwts.parser()
-                .verifyWith(jwtConfig.secretKey())
+                .verifyWith(this.jwtConfig.secretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private Boolean isTokenExpired(final String token) {
+        return this.extractExpiration(token).before(new Date());
     }
 }

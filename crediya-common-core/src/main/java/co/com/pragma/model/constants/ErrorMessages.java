@@ -4,7 +4,8 @@ package co.com.pragma.model.constants;
  * Mensajes de error centralizados para todo el sistema CrediYa.
  * Proporciona consistencia en los mensajes de error entre microservicios.
  */
-public final class ErrorMessages {
+public enum ErrorMessages {
+    ;
 
     // Generic Error Messages
     public static final String INTERNAL_SERVER_ERROR = "Error interno del servidor";
@@ -38,6 +39,7 @@ public final class ErrorMessages {
     public static final String LOAN_TYPE_NOT_FOUND = "El tipo de préstamo especificado no existe";
     public static final String INVALID_LOAN_AMOUNT = "El monto del préstamo no es válido";
     public static final String INVALID_LOAN_TERM = "El plazo del préstamo no es válido";
+    public static final String LOAN_AMOUNT_OUT_OF_RANGE = "El monto solicitado está fuera de los límites para el tipo de préstamo seleccionado.";
 
     // Status Error Messages
     public static final String STATUS_NOT_FOUND = "El estado especificado no existe";
@@ -46,6 +48,7 @@ public final class ErrorMessages {
     // Role Error Messages
     public static final String ROLE_NOT_FOUND = "El rol especificado no existe";
     public static final String INSUFFICIENT_PERMISSIONS = "Permisos insuficientes para realizar esta operación";
+    public static final String INVALID_USER_ROLE = "El usuario no tiene el rol requerido para esta operación.";
 
     // Validation Error Messages
     public static final String INVALID_EMAIL_FORMAT = "El formato del correo electrónico no es válido";
@@ -84,7 +87,4 @@ public final class ErrorMessages {
     public static final String USER_NOT_FOUND_BY_ID_TEMPLATE = "El usuario con ID '%d' no existe";
     public static final String APPLICATION_NOT_FOUND_BY_ID_TEMPLATE = "La solicitud con ID '%s' no existe";
 
-    private ErrorMessages() {
-        // Utility class - prevent instantiation
-    }
 }

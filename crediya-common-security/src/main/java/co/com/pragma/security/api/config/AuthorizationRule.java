@@ -31,11 +31,11 @@ public class AuthorizationRule {
      * @param path            La ruta a proteger
      * @param managerBeanName El nombre del bean del authorization manager
      */
-    public AuthorizationRule(HttpMethod method, String path, String managerBeanName) {
+    public AuthorizationRule(final HttpMethod method, final String path, final String managerBeanName) {
         this.method = method;
         this.path = path;
         this.managerBeanName = managerBeanName;
-        this.roles = new ArrayList<>();
+        roles = new ArrayList<>();
     }
 
     /**
@@ -46,11 +46,11 @@ public class AuthorizationRule {
      * @param managerBeanName El nombre del bean del authorization manager
      * @param roles           Los roles permitidos
      */
-    public AuthorizationRule(HttpMethod method, String path, String managerBeanName, List<String> roles) {
+    public AuthorizationRule(final HttpMethod method, final String path, final String managerBeanName, final List<String> roles) {
         this.method = method;
         this.path = path;
         this.managerBeanName = managerBeanName;
-        this.roles = roles != null ? roles : new ArrayList<>();
+        this.roles = null != roles ? roles : new ArrayList<>();
     }
 
     // Getters y setters
@@ -61,7 +61,7 @@ public class AuthorizationRule {
      * @return El método HTTP de la regla
      */
     public HttpMethod getMethod() {
-        return method;
+        return this.method;
     }
 
     /**
@@ -69,7 +69,7 @@ public class AuthorizationRule {
      *
      * @param method El método HTTP a establecer
      */
-    public void setMethod(HttpMethod method) {
+    public void setMethod(final HttpMethod method) {
         this.method = method;
     }
 
@@ -79,7 +79,7 @@ public class AuthorizationRule {
      * @return La ruta de la regla
      */
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     /**
@@ -87,7 +87,7 @@ public class AuthorizationRule {
      *
      * @param path La ruta a establecer
      */
-    public void setPath(String path) {
+    public void setPath(final String path) {
         this.path = path;
     }
 
@@ -97,7 +97,7 @@ public class AuthorizationRule {
      * @return El nombre del bean del authorization manager
      */
     public String getManagerBeanName() {
-        return managerBeanName;
+        return this.managerBeanName;
     }
 
     /**
@@ -105,7 +105,7 @@ public class AuthorizationRule {
      *
      * @param managerBeanName El nombre del bean del authorization manager a establecer
      */
-    public void setManagerBeanName(String managerBeanName) {
+    public void setManagerBeanName(final String managerBeanName) {
         this.managerBeanName = managerBeanName;
     }
 
@@ -115,7 +115,7 @@ public class AuthorizationRule {
      * @return La lista de roles permitidos
      */
     public List<String> getRoles() {
-        return roles;
+        return this.roles;
     }
 
     /**
@@ -123,8 +123,8 @@ public class AuthorizationRule {
      *
      * @param roles La lista de roles permitidos a establecer
      */
-    public void setRoles(List<String> roles) {
-        this.roles = roles != null ? roles : new ArrayList<>();
+    public void setRoles(final List<String> roles) {
+        this.roles = null != roles ? roles : new ArrayList<>();
     }
 
     // Métodos de acceso compatibles con el record anterior (mantener solo para retrocompatibilidad)
@@ -135,7 +135,7 @@ public class AuthorizationRule {
      */
     @Deprecated(since = "0.0.53")
     public HttpMethod method() {
-        return method;
+        return this.method;
     }
 
     /**
@@ -144,7 +144,7 @@ public class AuthorizationRule {
      */
     @Deprecated(since = "0.0.53")
     public String path() {
-        return path;
+        return this.path;
     }
 
     /**
@@ -153,7 +153,7 @@ public class AuthorizationRule {
      */
     @Deprecated(since = "0.0.53")
     public String managerBeanName() {
-        return managerBeanName;
+        return this.managerBeanName;
     }
 
     /**
@@ -162,6 +162,6 @@ public class AuthorizationRule {
      */
     @Deprecated(since = "0.0.53")
     public List<String> roles() {
-        return roles;
+        return this.roles;
     }
 }

@@ -42,14 +42,14 @@ public class SecurityFilterChainBuilder {
      * @param ruleTypeResolver   El resolver de tipos de reglas de autorización.
      * @param logger             El puerto de logging para registrar eventos.
      */
-    public SecurityFilterChainBuilder(ApplicationContext applicationContext,
-                                      AuthorizationRuleTypeResolver ruleTypeResolver,
-                                      LoggerPort logger) {
+    public SecurityFilterChainBuilder(final ApplicationContext applicationContext,
+                                      final AuthorizationRuleTypeResolver ruleTypeResolver,
+                                      final LoggerPort logger) {
         this.applicationContext = applicationContext;
         this.ruleTypeResolver = ruleTypeResolver;
         this.logger = logger;
 
-        this.authorizationStrategies = Map.of(
+        authorizationStrategies = Map.of(
                 AuthorizationRuleType.MANAGER, this::applyManagerAuthorization,
                 AuthorizationRuleType.ROLE, this::applyRoleAuthorization,
                 AuthorizationRuleType.DENY_ALL, this::applyDenyAllAuthorization,
@@ -59,8 +59,8 @@ public class SecurityFilterChainBuilder {
 
 
     // Método actualizado usando los métodos del record
-    private List<AuthorizationRule> createAutomaticRulesFromJwtExcludedPaths(JWTProperties jwtProperties) {
-        logger.debug("Creating automatic ANONYMOUS rules from JWT excluded-paths: {}",
+    private List<AuthorizationRule> createAutomaticRulesFromJwtExcludedPaths(final JWTProperties jwtProperties) {
+        this.logger.debug("Creating automatic ANONYMOUS rules from JWT excluded-paths: {}",
                 jwtProperties.excludedPaths());
 
         return jwtProperties.excludedPaths().stream()
@@ -69,55 +69,55 @@ public class SecurityFilterChainBuilder {
     }
 
     // Método auxiliar actualizado
-    private boolean isPathCoveredByJwtExcluded(String rulePath, JWTProperties jwtProperties) {
+    private boolean isPathCoveredByJwtExcluded(final String rulePath, final JWTProperties jwtProperties) {
         return jwtProperties.isPathCoveredByExcluded(rulePath);
     }
     // --- Estrategias de Autorización --- //
 
-    private void applyManagerAuthorization(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, AuthorizationRule rule) {
-        logger.debug("Applying MANAGER authorization for path: {}", rule.path());
-        ReactiveAuthorizationManager<AuthorizationContext> manager = resolveAuthorizationManager(rule.managerBeanName());
-        getAccessConfigurer(authorizeExchangeSpec, rule).access(manager);
+    private void applyManagerAuthorization(final ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, final AuthorizationRule rule) {
+        this.logger.debug("Applying MANAGER authorization for path: {}", rule.path());
+        final ReactiveAuthorizationManager<AuthorizationContext> manager = this.resolveAuthorizationManager(rule.managerBeanName());
+        this.getAccessConfigurer(authorizeExchangeSpec, rule).access(manager);
     }
 
-    private void applyDenyAllAuthorization(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, AuthorizationRule rule) {
-        logger.debug("Applying DENY_ALL authorization for path: {}", rule.path());
-        getAccessConfigurer(authorizeExchangeSpec, rule).denyAll();
+    private void applyDenyAllAuthorization(final ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, final AuthorizationRule rule) {
+        this.logger.debug("Applying DENY_ALL authorization for path: {}", rule.path());
+        this.getAccessConfigurer(authorizeExchangeSpec, rule).denyAll();
     }
 
-    private void applyPermitAllAuthorization(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, AuthorizationRule authorizationRule) {
-        logger.debug("Applying PERMIT_ALL authorization for path: {}", authorizationRule.path());
-        getAccessConfigurer(authorizeExchangeSpec, authorizationRule).permitAll();
+    private void applyPermitAllAuthorization(final ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, final AuthorizationRule authorizationRule) {
+        this.logger.debug("Applying PERMIT_ALL authorization for path: {}", authorizationRule.path());
+        this.getAccessConfigurer(authorizeExchangeSpec, authorizationRule).permitAll();
     }
 
-    private void applyRoleAuthorization(ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, AuthorizationRule rule) {
-        logger.debug("Applying ROLE authorization for path: {}", rule.path());
+    private void applyRoleAuthorization(final ServerHttpSecurity.AuthorizeExchangeSpec authorizeExchangeSpec, final AuthorizationRule rule) {
+        this.logger.debug("Applying ROLE authorization for path: {}", rule.path());
 
-        if (rule.roles() == null || rule.roles().isEmpty()) {
-            logger.warn("No roles specified for ROLE authorization on path: {}. Applying denyAll for security.", rule.path());
-            getAccessConfigurer(authorizeExchangeSpec, rule).denyAll();
+        if (null == rule.roles() || rule.roles().isEmpty()) {
+            this.logger.warn("No roles specified for ROLE authorization on path: {}. Applying denyAll for security.", rule.path());
+            this.getAccessConfigurer(authorizeExchangeSpec, rule).denyAll();
             return;
         }
 
         // Convertir la lista de roles a array, eliminando el prefijo ROLE_ si existe
-        String[] roleArray = rule.roles().stream()
+        final String[] roleArray = rule.roles().stream()
                 .map(role -> role.startsWith("ROLE_") ? role.substring(5) : role)
                 .toArray(String[]::new);
 
-        logger.debug("Applying roles: {} for path: {}", Arrays.toString(roleArray), rule.path());
+        this.logger.debug("Applying roles: {} for path: {}", Arrays.toString(roleArray), rule.path());
 
         // Caso especial para ANONYMOUS - permitir acceso sin autenticación
-        if (roleArray.length == 1 && "ANONYMOUS".equalsIgnoreCase(roleArray[0])) {
-            logger.debug("Applying anonymous access for path: {}", rule.path());
-            getAccessConfigurer(authorizeExchangeSpec, rule).permitAll();
+        if (1 == roleArray.length && "ANONYMOUS".equalsIgnoreCase(roleArray[0])) {
+            this.logger.debug("Applying anonymous access for path: {}", rule.path());
+            this.getAccessConfigurer(authorizeExchangeSpec, rule).permitAll();
             return;
         }
 
         // Aplicar autorización por roles normales
-        if (roleArray.length == 1) {
-            getAccessConfigurer(authorizeExchangeSpec, rule).hasRole(roleArray[0]);
+        if (1 == roleArray.length) {
+            this.getAccessConfigurer(authorizeExchangeSpec, rule).hasRole(roleArray[0]);
         } else {
-            getAccessConfigurer(authorizeExchangeSpec, rule).hasAnyRole(roleArray);
+            this.getAccessConfigurer(authorizeExchangeSpec, rule).hasAnyRole(roleArray);
         }
     }
 
@@ -130,61 +130,61 @@ public class SecurityFilterChainBuilder {
      * @param jwtProperties         Las propiedades JWT que incluyen las rutas excluidas.
      */
     public void applyAuthorizationRules(
-            ServerHttpSecurity.AuthorizeExchangeSpec exchanges,
-            SecurityRulesProvider securityRulesProvider,
-            JWTProperties jwtProperties) {
+            final ServerHttpSecurity.AuthorizeExchangeSpec exchanges,
+            final SecurityRulesProvider securityRulesProvider,
+            final JWTProperties jwtProperties) {
 
-        logger.info("Applying integrated authorization rules. JWT excluded-paths: {}, Security rules: {}",
+        this.logger.info("Applying integrated authorization rules. JWT excluded-paths: {}, Security rules: {}",
                 jwtProperties.excludedPaths().size(),
                 securityRulesProvider.authorization().size());
 
         // 1. Primero aplicar reglas automáticas desde JWT excluded-paths
-        List<AuthorizationRule> jwtAutomaticRules = createAutomaticRulesFromJwtExcludedPaths(jwtProperties);
-        Set<String> jwtExcludedPaths = new HashSet<>();
+        final List<AuthorizationRule> jwtAutomaticRules = this.createAutomaticRulesFromJwtExcludedPaths(jwtProperties);
+        final Set<String> jwtExcludedPaths = new HashSet<>();
 
         jwtAutomaticRules.forEach(rule -> {
-            logger.debug("Applying automatic JWT excluded rule: Path={}", rule.path());
+            this.logger.debug("Applying automatic JWT excluded rule: Path={}", rule.path());
             jwtExcludedPaths.add(rule.path());
-            AuthorizationRuleType ruleType = ruleTypeResolver.determineRuleType(rule);
-            authorizationStrategies.get(ruleType).accept(exchanges, rule);
+            final AuthorizationRuleType ruleType = this.ruleTypeResolver.determineRuleType(rule);
+            this.authorizationStrategies.get(ruleType).accept(exchanges, rule);
         });
 
         // 2. Luego aplicar reglas explícitas (pero evitar duplicados)
         securityRulesProvider.authorization().forEach(rule -> {
             // Verificar si esta ruta ya fue procesada por JWT excluded-paths
-            boolean alreadyProcessedByJwt = jwtExcludedPaths.contains(rule.path()) ||
-                    isPathCoveredByJwtExcluded(rule.path(), jwtProperties);
+            final boolean alreadyProcessedByJwt = jwtExcludedPaths.contains(rule.path()) ||
+                    this.isPathCoveredByJwtExcluded(rule.path(), jwtProperties);
 
             if (alreadyProcessedByJwt) {
-                logger.warn("Rule for path {} conflicts with JWT excluded-paths. " +
+                this.logger.warn("Rule for path {} conflicts with JWT excluded-paths. " +
                         "JWT excluded-paths take precedence. Skipping explicit rule.", rule.path());
                 return;
             }
 
-            logger.debug("Processing explicit rule: Path={}, Method={}, Manager={}, Roles={}",
+            this.logger.debug("Processing explicit rule: Path={}, Method={}, Manager={}, Roles={}",
                     rule.path(), rule.method(), rule.managerBeanName(), rule.roles());
 
-            AuthorizationRuleType ruleType = ruleTypeResolver.determineRuleType(rule);
-            logger.debug("Rule for Path {} resolved to type: {}", rule.path(), ruleType);
-            authorizationStrategies.get(ruleType).accept(exchanges, rule);
+            final AuthorizationRuleType ruleType = this.ruleTypeResolver.determineRuleType(rule);
+            this.logger.debug("Rule for Path {} resolved to type: {}", rule.path(), ruleType);
+            this.authorizationStrategies.get(ruleType).accept(exchanges, rule);
         });
 
         // 3. Regla de fallback
         exchanges.anyExchange().authenticated();
-        logger.info("Authorization rules applied. Total JWT excluded: {}, Total explicit: {}",
+        this.logger.info("Authorization rules applied. Total JWT excluded: {}, Total explicit: {}",
                 jwtAutomaticRules.size(), securityRulesProvider.authorization().size());
     }
 
     private ServerHttpSecurity.AuthorizeExchangeSpec.Access getAccessConfigurer(
-            ServerHttpSecurity.AuthorizeExchangeSpec exchanges, AuthorizationRule rule) {
-        logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Processing rule: path={}, method={}", rule.path(), rule.method());
+            final ServerHttpSecurity.AuthorizeExchangeSpec exchanges, final AuthorizationRule rule) {
+        this.logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Processing rule: path={}, method={}", rule.path(), rule.method());
         return Optional.ofNullable(rule.method())
                 .map(method -> {
-                    logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Using method-specific matcher: {} {}", method, rule.path());
+                    this.logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Using method-specific matcher: {} {}", method, rule.path());
                     return exchanges.pathMatchers(method, rule.path());
                 })
                 .orElseGet(() -> {
-                    logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Using path-only matcher: {}", rule.path());
+                    this.logger.debug("SecurityFilterChainBuilder.getAccessConfigurer() - Using path-only matcher: {}", rule.path());
                     return exchanges.pathMatchers(rule.path());
                 });
     }
@@ -197,8 +197,8 @@ public class SecurityFilterChainBuilder {
      * @throws IllegalArgumentException si el nombre del bean es nulo/vacío o el bean no puede ser resuelto.
      */
     @SuppressWarnings("unchecked")
-    private ReactiveAuthorizationManager<AuthorizationContext> resolveAuthorizationManager(String beanName) {
+    private ReactiveAuthorizationManager<AuthorizationContext> resolveAuthorizationManager(final String beanName) {
         // Ahora siempre obtenemos el bean del ApplicationContext
-        return applicationContext.getBean(beanName, ReactiveAuthorizationManager.class);
+        return this.applicationContext.getBean(beanName, ReactiveAuthorizationManager.class);
     }
 }

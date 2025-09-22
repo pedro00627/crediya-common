@@ -6,7 +6,8 @@ import java.math.BigDecimal;
  * Constantes de reglas de negocio para el sistema CrediYa.
  * Define límites, porcentajes y otros valores críticos para la lógica de negocio.
  */
-public final class BusinessConstants {
+public enum BusinessConstants {
+    ;
 
     // Salary Validation
     public static final BigDecimal MIN_BASE_SALARY = BigDecimal.ZERO;
@@ -71,7 +72,4 @@ public final class BusinessConstants {
     public static final String PHONE_REGEX = "^[+]?[0-9]{10,15}$";
     public static final String ROLE_FORMAT_REGEX = "^[A-Z_]+$";
 
-    private BusinessConstants() {
-        // Utility class - prevent instantiation
-    }
 }

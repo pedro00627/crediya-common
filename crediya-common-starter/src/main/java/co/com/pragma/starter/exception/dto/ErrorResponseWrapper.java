@@ -12,7 +12,7 @@ public record ErrorResponseWrapper(
      * @param errorBody The error body to wrap
      * @return ErrorResponseWrapper instance
      */
-    public static ErrorResponseWrapper wrap(ErrorBody errorBody) {
+    public static ErrorResponseWrapper wrap(final ErrorBody errorBody) {
         return new ErrorResponseWrapper(errorBody);
     }
 
@@ -24,7 +24,7 @@ public record ErrorResponseWrapper(
      * @param message    Error message
      * @return ErrorResponseWrapper instance
      */
-    public static ErrorResponseWrapper create(int statusCode, String error, String message) {
+    public static ErrorResponseWrapper create(final int statusCode, final String error, final String message) {
         return new ErrorResponseWrapper(ErrorBody.create(statusCode, error, message));
     }
 
@@ -37,7 +37,7 @@ public record ErrorResponseWrapper(
      * @param details    Additional error details
      * @return ErrorResponseWrapper instance
      */
-    public static ErrorResponseWrapper create(int statusCode, String error, String message, String details) {
+    public static ErrorResponseWrapper create(final int statusCode, final String error, final String message, final String details) {
         return new ErrorResponseWrapper(ErrorBody.create(statusCode, error, message, details));
     }
 }

@@ -22,16 +22,16 @@ class LogHelperTest {
 
     @Test
     void testMaskEmail_nullInput() {
-        assertEquals("invalid-email-format", LogHelper.maskEmail(null));
+        assertEquals("***", LogHelper.maskEmail(null));
     }
 
     @Test
     void testMaskEmail_invalidFormat() {
-        assertEquals("invalid-email-format", LogHelper.maskEmail("invalid-email"));
-        assertEquals("invalid-email-format", LogHelper.maskEmail("test@.com"));
-        assertEquals("invalid-email-format", LogHelper.maskEmail("test@com"));
-        assertEquals("invalid-email-format", LogHelper.maskEmail("test@example"));
-        assertEquals("invalid-email-format", LogHelper.maskEmail("test@example.c")); // TLD too short
+        assertEquals("***", LogHelper.maskEmail("invalid-email"));
+        assertEquals("***", LogHelper.maskEmail("test@.com"));
+        assertEquals("***", LogHelper.maskEmail("test@com"));
+        assertEquals("***", LogHelper.maskEmail("test@example"));
+        assertEquals("***", LogHelper.maskEmail("test@example.c")); // TLD too short
     }
 
     @Test
