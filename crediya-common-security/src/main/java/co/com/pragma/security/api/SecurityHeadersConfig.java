@@ -17,6 +17,7 @@ public class SecurityHeadersConfig implements WebFilter {
     /**
      * Constructor por defecto para SecurityHeadersConfig.
      */
+
     public SecurityHeadersConfig() {
         // Constructor por defecto
     }
@@ -28,6 +29,7 @@ public class SecurityHeadersConfig implements WebFilter {
      * @param chain    La cadena de filtros web.
      * @return Un {@link Mono} que indica la finalización del procesamiento del filtro.
      */
+
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final WebFilterChain chain) {
         final HttpHeaders headers = exchange.getResponse().getHeaders();

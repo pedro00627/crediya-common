@@ -2,7 +2,10 @@ package co.com.pragma.security.api.config;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuthorizationRuleTypeTest {
 
@@ -98,7 +101,7 @@ class AuthorizationRuleTypeTest {
         for (int i = 0; i < values.length; i++) {
             for (int j = i + 1; j < values.length; j++) {
                 assertNotEquals(values[i], values[j],
-                    "Values at index " + i + " and " + j + " should be different");
+                        "Values at index " + i + " and " + j + " should be different");
             }
         }
     }

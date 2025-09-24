@@ -1,4 +1,4 @@
-// Version management
+3// Version management
 ext {
     springBootVersion = '3.5.6'
     commonVersion = '0.0.60'
@@ -7,7 +7,7 @@ ext {
 
 allprojects {
     group = 'co.com.pragma'
-    version = rootProject.ext.commonVersion
+    version = '0.0.61'
 
     repositories {
         mavenCentral()
@@ -20,6 +20,15 @@ allprojects {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(21))
         }
+    }
+
+    // Configure UTF-8 encoding for all tasks
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test) {
+        systemProperty 'file.encoding', 'UTF-8'
     }
 
     configurations.configureEach {

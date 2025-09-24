@@ -23,12 +23,14 @@ import java.util.Optional;
  * Filtro de autenticación JWT para aplicaciones web reactivas.
  * Este filtro se aplica a las rutas seguras para validar los tokens JWT.
  */
+
 // Removed @Component annotation
 public class JWTAuthenticationFilter implements WebFilter {
 
     /**
      * Clave para almacenar el token de autorización en el contexto reactivo.
      */
+
     public static final String AUTH_TOKEN_KEY = "Authorization";
     private final JWTUtil jwtUtil;
     private final LoggerPort logger;
@@ -41,6 +43,7 @@ public class JWTAuthenticationFilter implements WebFilter {
      * @param logger        Puerto de logging para registrar eventos
      * @param jwtProperties Propiedades de configuración JWT
      */
+
     public JWTAuthenticationFilter(final JWTUtil jwtUtil, final LoggerPort logger, final JWTProperties jwtProperties) {
         this.jwtUtil = jwtUtil;
         this.logger = logger;

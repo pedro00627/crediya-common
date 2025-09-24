@@ -2,35 +2,18 @@ package co.com.pragma.security.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PathMatcherTest {
 
     @Test
-    void shouldHavePrivateConstructor() throws NoSuchMethodException {
-        final Constructor<PathMatcher> constructor = PathMatcher.class.getDeclaredConstructor();
-        assertFalse(constructor.isAccessible());
-        assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
-    }
-
-    @Test
-    void shouldBeAFinalClass() {
-        assertTrue(java.lang.reflect.Modifier.isFinal(PathMatcher.class.getModifiers()));
-    }
-
-    @Test
-    void constructorShouldNotAllowInstantiation() throws Exception {
-        final Constructor<PathMatcher> constructor = PathMatcher.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-
-        // Should be able to create instance but constructor should be private
-        assertDoesNotThrow(() -> constructor.newInstance());
-        assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
+    void shouldBeAnEnum() {
+        assertTrue(PathMatcher.class.isEnum(), "PathMatcher debe ser un enum");
     }
 
     @Test

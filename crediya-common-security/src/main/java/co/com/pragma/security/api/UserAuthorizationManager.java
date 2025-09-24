@@ -21,6 +21,7 @@ public class UserAuthorizationManager implements ReactiveAuthorizationManager<Au
      * Constructor por defecto para UserAuthorizationManager.
      * Inicializa la lógica de autorización de usuario.
      */
+
     public UserAuthorizationManager() {
         authorizationLogic = new UserAuthorizationLogic();
     }
@@ -33,6 +34,7 @@ public class UserAuthorizationManager implements ReactiveAuthorizationManager<Au
      * @param object         El contexto de autorización.
      * @return Un {@link Mono} que emite un {@link AuthorizationDecision} indicando si la autorización es concedida o denegada.
      */
+
     @Override
     public Mono<AuthorizationDecision> check(final Mono<Authentication> authentication, final AuthorizationContext object) {
         return this.authorize(authentication, object).cast(AuthorizationDecision.class);

@@ -17,18 +17,23 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class JWTUtilTest {
 
-    @Mock
-    private JWTProperties jwtProperties;
-
-    private JWTUtil jwtUtil;
-    private SecretKey testSecretKey;
     private final String testSecret = "testSecretKeyForJWTTesting123456789012345678901234567890";
     private final long testExpiration = 3600000L; // 1 hour
+    @Mock
+    private JWTProperties jwtProperties;
+    private JWTUtil jwtUtil;
+    private SecretKey testSecretKey;
 
     @BeforeEach
     void setUp() {
