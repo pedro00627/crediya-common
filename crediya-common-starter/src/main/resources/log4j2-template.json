@@ -21,8 +21,7 @@
   },
   "logger": {
     "$resolver": "logger",
-    "field": "name",
-    "abbreviator": "pattern{1.}"
+    "field": "name"
   },
   "thread": {
     "$resolver": "thread",

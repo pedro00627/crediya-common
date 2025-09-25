@@ -1,13 +1,13 @@
-3// Version management
+// Version management
 ext {
     springBootVersion = '3.5.6'
-    commonVersion = '0.0.60'
+    commonVersion = '0.0.63'
     jjwtVersion = '0.12.6'
 }
 
 allprojects {
     group = 'co.com.pragma'
-    version = '0.0.61'
+    version = '0.0.63'
 
     repositories {
         mavenCentral()
@@ -210,6 +210,10 @@ project(':crediya-common-security') {
         api platform("org.springframework.boot:spring-boot-dependencies:${rootProject.ext.springBootVersion}")
         api 'org.springframework.boot:spring-boot-starter-security'
         api 'org.apache.commons:commons-lang3:3.18.0'
+
+        // OpenAPI/Swagger dependencies for auto-configuration
+        api 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+        api 'org.springdoc:springdoc-openapi-starter-common:2.5.0'
 
         api "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
         runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"

@@ -69,10 +69,7 @@ public class JWTAuthenticationFilter implements WebFilter {
                 .doOnError(e -> this.logger.warn("JWTAuthenticationFilter.validateAndCreateAuthentication() - Token validation failed for path: {}, error: {}", path, e.getMessage()))
                 .flatMap(authentication -> chain.filter(exchange)
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication)))
-                .switchIfEmpty(Mono.defer(() -> {
-                    this.logger.warn("JWTAuthenticationFilter.filter() - JWT authentication failed or no token found for path: {}. Returning UNAUTHORIZED.", path);
-                    return this.setUnauthorized(exchange);
-                }));
+                .onErrorResume(e -> this.handleAuthenticationError(e, path, exchange));
     }
 
     private Mono<String> extractToken(final ServerWebExchange exchange) {
@@ -87,7 +84,7 @@ public class JWTAuthenticationFilter implements WebFilter {
                 .flatMap(optional -> optional.map(Mono::just).orElse(Mono.empty()))
                 .onErrorResume(e -> {
                     this.logger.warn("Token validation failed: {}", e.getMessage());
-                    return Mono.empty();
+                    return Mono.error(e);
                 });
     }
 
@@ -118,6 +115,33 @@ public class JWTAuthenticationFilter implements WebFilter {
 
     private boolean isPathExcluded(final String path) {
         return PathMatcher.matchesAny(path, this.jwtProperties.excludedPaths());
+    }
+
+    /**
+     * Maneja errores de autenticación usando paradigma funcional.
+     * Solo captura errores relacionados con JWT/Authentication,
+     * propaga otros errores al GlobalExceptionHandler.
+     */
+    private Mono<Void> handleAuthenticationError(final Throwable error, final String path, final ServerWebExchange exchange) {
+        return Optional.ofNullable(error.getMessage())
+                .filter(this::isJwtRelatedError)
+                .map(message -> {
+                    this.logger.warn("JWTAuthenticationFilter.filter() - JWT authentication failed for path: {}, error: {}. Returning UNAUTHORIZED.", path, message);
+                    return this.setUnauthorized(exchange);
+                })
+                .orElseGet(() -> {
+                    this.logger.debug("JWTAuthenticationFilter.filter() - Non-JWT error for path: {}, propagating to GlobalExceptionHandler: {}", path, error.getMessage());
+                    return Mono.error(error);
+                });
+    }
+
+    /**
+     * Verifica si el error está relacionado con JWT usando paradigma funcional.
+     */
+    private boolean isJwtRelatedError(final String errorMessage) {
+        return List.of("JWT", "Token", "Authentication", "HMAC", "key byte array")
+                .stream()
+                .anyMatch(errorMessage::contains);
     }
 
     private Mono<Void> setUnauthorized(final ServerWebExchange exchange) {

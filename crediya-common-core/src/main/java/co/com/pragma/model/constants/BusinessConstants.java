@@ -44,7 +44,7 @@ public enum BusinessConstants {
     /**
      * ID del rol de administrador (corresponde al valor en base de datos).
      */
-    public static final Integer ADMIN_ROLE_ID = 1;
+    public static final Integer ADMIN_ROLE_ID = 3;
 
     /**
      * ID del rol de asesor (corresponde al valor en base de datos).
@@ -54,7 +54,7 @@ public enum BusinessConstants {
     /**
      * ID del rol de cliente (corresponde al valor en base de datos).
      */
-    public static final Integer CLIENT_ROLE_ID = 3;
+    public static final Integer CLIENT_ROLE_ID = 1;
 
     /**
      * Tiempo de expiración por defecto para tokens JWT (1 hora en milisegundos).
